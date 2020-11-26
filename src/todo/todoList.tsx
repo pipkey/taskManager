@@ -2,6 +2,8 @@ import React, {ChangeEvent} from "react";
 import {filterTypeForTodo, TaskType} from "../App";
 import AddItemForm from "../AddItemForm";
 import EditableSpan from "../EditableSpan";
+import {Button, ButtonGroup, Checkbox, IconButton} from "@material-ui/core";
+import {Delete} from "@material-ui/icons";
 
 
 export type TodoPropsType = {
@@ -14,8 +16,8 @@ export type TodoPropsType = {
     changeStatus: (id: string, isDone: boolean, todolistId: string) => void
     filter: filterTypeForTodo
     removeTodoList: (todolistId: string) => void
-    changeTaskTitle:(id: string, title: string, todolistId: string) => void
-    changeToDoTitle: (title:string, todolistID: string)=>void
+    changeTaskTitle: (id: string, title: string, todolistId: string) => void
+    changeToDoTitle: (title: string, todolistID: string) => void
 }
 
 
@@ -48,12 +50,16 @@ const Todo = (props: TodoPropsType) => {
         <div className="todo_main">
             <h2>
                 <EditableSpan title={props.title} changeValue={changeTodoListTitle}/>
-                <button onClick={removeTodoListHandler}> - </button>
+
+                <IconButton onClick={removeTodoListHandler}>
+                    <Delete/>
+                </IconButton>
+
             </h2>
 
-                <AddItemForm addItem={addTask}/>
+            <AddItemForm addItem={addTask}/>
 
-            <ul>
+            <div>
                 {
                     props.tasks.map(t => {
                         const removeTaskHandler = () => props.removeTask(t.id, props.id);
@@ -62,34 +68,43 @@ const Todo = (props: TodoPropsType) => {
                             let newValue = e.currentTarget.checked;
                             props.changeStatus(t.id, newValue, props.id)
                         };
-                        const changeTaskTitle = (newValue: string)=>{
+                        const changeTaskTitle = (newValue: string) => {
                             props.changeTaskTitle(t.id, newValue, props.id)
-                        }
+                        };
 
 
-                        return <li className={t.isDone ? "isDone" : ""} key={t.id}>
-                            <input type="checkbox" onChange={onChangeHandler} checked={t.isDone}/>
+                        return <div className={t.isDone ? "isDone" : ""} key={t.id}>
+                            <Checkbox onChange={onChangeHandler} checked={t.isDone}/>
 
                             <EditableSpan title={t.title} changeValue={changeTaskTitle}/>
-
-                            <button onClick={removeTaskHandler}> x
-                            </button>
-                        </li>
+                            <IconButton onClick={removeTaskHandler}>
+                                <Delete/>
+                            </IconButton>
+                        </div>
                     })
                 }
-            </ul>
+            </div>
 
 
             <div>
-                <button className={props.filter === "all" ? "active-filter" : ""}
-                        onClick={onAllClickHandler}> all
-                </button>
-                <button className={props.filter === "active" ? "active-filter" : ""}
-                        onClick={onActiveClickHandler}> active
-                </button>
-                <button className={props.filter === "completed" ? "active-filter" : ""}
-                        onClick={onCompletedClickHandler}> complete
-                </button>
+
+                <ButtonGroup color="primary" aria-label="outlined secondary button group">
+                    <Button onClick={onAllClickHandler}
+                            variant={props.filter === "all" ? "contained" : "outlined"}
+                    > All
+                    </Button>
+
+                    <Button onClick={onActiveClickHandler}
+                            variant={props.filter === "active" ? "contained" : "outlined"}
+                    > Active
+                    </Button>
+
+                    <Button onClick={onCompletedClickHandler}
+                            variant={props.filter === "completed" ? "contained" : "outlined"}
+                    > Complete
+                    </Button>
+                </ButtonGroup>
+
             </div>
         </div>
     )
