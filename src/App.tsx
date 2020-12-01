@@ -11,7 +11,7 @@ type TaskStateType = {
     [key: string]: Array<TaskType>
 }
 
-type TodoListType = {
+export type TodoListType = {
     id: string
     title: string
     filter: filterTypeForTodo
@@ -58,8 +58,6 @@ function App() {
         tasksObj[todolistId] = filtredTask;
         setTasks({...tasksObj})
     }
-
-
     //функция фильтра тасок
 
     function changeFilter(newFilter: filterTypeForTodo, todolistID: string) {
