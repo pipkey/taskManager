@@ -25,7 +25,7 @@ export type TaskType = {
 }
 export type filterTypeForTodo = "all" | "active" | "completed"
 
-function App() {
+function AppWithReducers() {
 
 
     //добавление тасок
@@ -207,4 +207,4 @@ function App() {
     );
 }
 
-export default App;
+export default AppWithReducers;
