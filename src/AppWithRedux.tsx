@@ -1,98 +1,96 @@
-import React, {useReducer} from "react";
+import React from "react";
 import "./App.css";
-import {v1} from "uuid";
 import Todo from "./todo/todoList";
 import AddItemForm from "./AddItemForm";
 import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from "@material-ui/core";
 import {Menu} from "@material-ui/icons";
-import {
-    AddTodolistAC,
-    ChangeFilterlistAC,
-    ChangeTitleTodolistAC,
-    RemoveTodolistAC,
-    TodoListsReducer
-} from "./state/todolists-reducer";
-import {AddTaskAC, ChangeTaskStatusAC, ChangeTitleTaskAC, RemoveTaskAC, taskReducer} from "./state/task-reducer";
+import {AddTodolistAC, ChangeFilterlistAC, ChangeTitleTodolistAC, RemoveTodolistAC} from "./state/todolists-reducer";
+import {AddTaskAC, ChangeTaskStatusAC, ChangeTitleTaskAC, RemoveTaskAC} from "./state/task-reducer";
+import {useDispatch, useSelector} from "react-redux";
+import {TaskStateType, TodoListType} from "./App";
+import {AppRootStateType} from "./state/store";
 
 export type filterTypeForTodo = "all" | "active" | "completed"
 
 function AppWithRedux() {
 
-    let todolistId1 = v1();
-    let todolistId2 = v1();
-    let todolistId3 = v1();
+    const todoLists = useSelector <AppRootStateType,Array<TodoListType>>(state => state.todoList);
+    const tasksObj = useSelector<AppRootStateType, TaskStateType>(state => state.task);
+    const dispatch = useDispatch();
 
-    let [todoLists, dispatchTodoLists] = useReducer(TodoListsReducer, [
-        {id: todolistId1, title: "what to eat", filter: "all"},
-        {id: todolistId2, title: "what to read", filter: "all"},
-        {id: todolistId3, title: "who are learn", filter: "all"}
-    ]);
+    // let todolistId1 = v1();
+    // let todolistId2 = v1();
+    // let todolistId3 = v1();
 
-    let [tasksObj, dispatchToTasks] = useReducer(taskReducer, {
-        [todolistId1]: [
-            {id: v1(), title: "milk", isDone: true},
-            {id: v1(), title: "bread", isDone: false},
-            {id: v1(), title: "fish", isDone: false},
-            {id: v1(), title: "beer", isDone: true},
-        ],
-        [todolistId2]: [
-            {id: v1(), title: "book", isDone: true},
-            {id: v1(), title: "magazine", isDone: false},
-        ],
-        [todolistId3]: [
-            {id: v1(), title: "React", isDone: false},
-            {id: v1(), title: "Redux", isDone: true},
-            {id: v1(), title: "JavaScript", isDone: true},
-        ]
-    });
+    // let [todoLists, dispatchTodoLists] = useReducer(TodoListsReducer, [
+    //     {id: todolistId1, title: "what to eat", filter: "all"},
+    //     {id: todolistId2, title: "what to read", filter: "all"},
+    //     {id: todolistId3, title: "who are learn", filter: "all"}
+    // ]);
+    //
+    // let [tasksObj, dispatchToTasks] = useReducer(taskReducer, {
+    //     [todolistId1]: [
+    //         {id: v1(), title: "milk", isDone: true},
+    //         {id: v1(), title: "bread", isDone: false},
+    //         {id: v1(), title: "fish", isDone: false},
+    //         {id: v1(), title: "beer", isDone: true},
+    //     ],
+    //     [todolistId2]: [
+    //         {id: v1(), title: "book", isDone: true},
+    //         {id: v1(), title: "magazine", isDone: false},
+    //     ],
+    //     [todolistId3]: [
+    //         {id: v1(), title: "React", isDone: false},
+    //         {id: v1(), title: "Redux", isDone: true},
+    //         {id: v1(), title: "JavaScript", isDone: true},
+    //     ]
+    // });
 
     //добавление тасок
     function addTask(title: string, todolistId: string) {
         const action = AddTaskAC(title, todolistId);
-        dispatchToTasks(action);
+        dispatch(action);
     }
 
     //Добавление ТуДуЛиста
     function addToDoList(title: string) {
         let action = AddTodolistAC(title);
-        dispatchTodoLists(action);
-        dispatchToTasks(action);
+        dispatch(action);
     }
 
     //Удаление тасок
     function removeTask(titleID: string, todolistId: string) {
         let action = RemoveTaskAC(titleID, todolistId);
-        dispatchToTasks(action);
+        dispatch(action);
     }
 
     //функция фильтра todolist
     function changeFilter(newFilter: filterTypeForTodo, todolistID: string) {
         const action = ChangeFilterlistAC(todolistID, newFilter);
-        dispatchTodoLists(action);
+        dispatch(action);
     }
 
     function changeToDoTitle(title: string, todolistID: string) {
         const action = ChangeTitleTodolistAC(title, todolistID);
-        dispatchTodoLists(action);
+        dispatch(action);
     }
 
     //Изменение статуса TRUE or FALSE
     function changeStatus(taskID: string, isDone: boolean, todolistId: string) {
         const action = ChangeTaskStatusAC(taskID, todolistId, isDone);
-        dispatchToTasks(action);
+        dispatch(action);
     }
 
     //Редактирование Названия Тасок
     function changeTaskTitle(taskID: string, title: string, todolistId: string) {
         const action = ChangeTitleTaskAC(taskID, title, todolistId);
-        dispatchToTasks(action);
+        dispatch(action);
     }
 
     //Удаление ТудуЛитсов
     let removeTodoList = (todolistId: string) => {
         const action = RemoveTodolistAC(todolistId);
-        dispatchTodoLists(action);
-        dispatchToTasks(action)
+        dispatch(action)
     };
 
     return (
@@ -126,10 +124,12 @@ function AppWithRedux() {
                             let taskForTodo = tasksObj[tl.id];
 
                             if (tl.filter === "active") {
-                                taskForTodo = taskForTodo.filter(t => t.isDone === false)
+                                // taskForTodo = taskForTodo.filter(t => t.isDone === false)
+                                taskForTodo = taskForTodo.filter(t => !t.isDone )
                             }
                             if (tl.filter === "completed") {
-                                taskForTodo = taskForTodo.filter(t => t.isDone === true)
+                                // taskForTodo = taskForTodo.filter(t => t.isDone === true)
+                                taskForTodo = taskForTodo.filter(t => t.isDone )
                             }
 
                             return (<Grid item>
