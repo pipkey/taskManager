@@ -32,7 +32,7 @@ export type ActionType = RemoveTaskActionType |
     RemoveTodolistActionType |
     AddTodolistActionType
 
-const initialState:TaskStateType = {};
+const initialState: TaskStateType = {};
 
 export const taskReducer = (state = initialState, action: ActionType) => {
 
@@ -56,43 +56,55 @@ export const taskReducer = (state = initialState, action: ActionType) => {
         }
         case "CHANGE-STATUS": {
             return {
-                ...state, [action.todoListId]: state[action.todoListId].map(t => {
-                    if (t.id !== action.taskId) return t;
-                    else return {...t, isDone: action.isDone}
-                })
-            };
-        }
-        case "CHANGE-TASK-TITLE": {
-            return {
-                ...state, [action.todoListId]: state[action.todoListId].map(t => {
-                    if (t.id !== action.taskID) return t;
-                    else return {...t, title: action.title}
-                })
-            };
-        }
+                ...state, [action.todoListId]: state[action.todoListId].map(t => t.id === action.taskId
+                    ? {...t, isDone: action.isDone}
+                    : t)
+            }};
+
+            // let todolistTask = state[action.todoListId];
+            // state[action.todoListId] = todolistTask
+            //     .map(t => t.id === action.taskId
+            //         ? {...t, isDone: action.isDone}
+            //         : t );
+
+
+        case "CHANGE-TASK-TITLE" : {
+            let todolistTask = state[action.todoListId];
+            state[action.todoListId] = todolistTask
+                .map(t => t.id === action.taskID
+                    ? {...t, title: action.title}
+                    : t );
+
+                return ({...state})
+            // {
+            //         ...state, [action.todoListId]: state[action.todoListId].map(t => t.id === action.taskId
+            //             ? {...t, title: action.title}
+            //             : t)
+            //     };
+            }
         case "REMOVE-TODOLIST": {
-            let copyState = {...state};
-            delete copyState[action.id];
-            return copyState
-        }
-        case "ADD-TODOLIST": {
-            return {...state, [action.todolistId]: []}
-        }
+                let copyState = {...state};
+                delete copyState[action.id];
+                return copyState
+            }
+        case "ADD-TODOLIST" : {
+                return {...state, [action.todolistId]: []}
+            }
         default:
-           return state
-    }
-};
+            return state
+        }
+    };
 
 // Action Creaters
-export const RemoveTaskAC = (taskId: string, todoListId: string): RemoveTaskActionType => {
-    return {type: "REMOVE-TASK", taskId: taskId, todoListId: todoListId}
-};
-export const AddTaskAC = (title: string, todolistId: string): AddTaskActionType => {
-    return {type: "ADD-TASK", title, todolistId}
-};
-export const ChangeTaskStatusAC = (taskId: string, todoListId: string, isDone: boolean): ChangeTaskStatusActionType => {
-    return {type: "CHANGE-STATUS", taskId, todoListId, isDone}
-};
-export const ChangeTitleTaskAC = (taskID: string, title: string, todoListId: string): ChangeTitleTaskActionType => {
-    return {type: "CHANGE-TASK-TITLE", taskID, title, todoListId}
-};
+    export const RemoveTaskAC = (taskId: string, todoListId: string): RemoveTaskActionType => {
+        return {type: "REMOVE-TASK", taskId: taskId, todoListId: todoListId}
+    };
+    export const AddTaskAC = (title: string, todolistId: string): AddTaskActionType => {
+        return {type: "ADD-TASK", title, todolistId}
+    };
+    export const ChangeTaskStatusAC = (taskId: string, todoListId: string, isDone: boolean): ChangeTaskStatusActionType => {
+        return {type: "CHANGE-STATUS", taskId, todoListId, isDone}
+    };
+    export const ChangeTitleTaskAC = (taskID: string, title: string, todoListId: string): ChangeTitleTaskActionType => {
+        return {type: "CHANGE-TASK-TITLE", taskID, title, todoListId}
+    };

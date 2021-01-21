@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback} from "react";
 import "./App.css";
 import Todo from "./todo/todoList";
 import AddItemForm from "./AddItemForm";
@@ -14,7 +14,7 @@ export type filterTypeForTodo = "all" | "active" | "completed"
 
 function AppWithRedux() {
 
-    const todoLists = useSelector <AppRootStateType,Array<TodoListType>>(state => state.todoList);
+    const todoLists = useSelector<AppRootStateType, Array<TodoListType>>(state => state.todoList);
     const tasksObj = useSelector<AppRootStateType, TaskStateType>(state => state.task);
     const dispatch = useDispatch();
 
@@ -47,51 +47,52 @@ function AppWithRedux() {
     // });
 
     //добавление тасок
-    function addTask(title: string, todolistId: string) {
+    const addTask = useCallback((title: string, todolistId: string) => {
         const action = AddTaskAC(title, todolistId);
         dispatch(action);
-    }
+    }, [])
+
 
     //Добавление ТуДуЛиста
-    function addToDoList(title: string) {
+    const addToDoList = useCallback((title: string) => {
         let action = AddTodolistAC(title);
         dispatch(action);
-    }
+    }, [dispatch]);
 
     //Удаление тасок
-    function removeTask(titleID: string, todolistId: string) {
+    const removeTask = useCallback((titleID: string, todolistId: string) => {
         let action = RemoveTaskAC(titleID, todolistId);
         dispatch(action);
-    }
+    }, [])
 
     //функция фильтра todolist
-    function changeFilter(newFilter: filterTypeForTodo, todolistID: string) {
+    const changeFilter = useCallback((newFilter: filterTypeForTodo, todolistID: string) => {
         const action = ChangeFilterlistAC(todolistID, newFilter);
         dispatch(action);
-    }
+    }, [])
 
-    function changeToDoTitle(title: string, todolistID: string) {
+    const changeToDoTitle = useCallback((title: string, todolistID: string) => {
         const action = ChangeTitleTodolistAC(title, todolistID);
         dispatch(action);
-    }
+    }, [])
 
     //Изменение статуса TRUE or FALSE
-    function changeStatus(taskID: string, isDone: boolean, todolistId: string) {
+    const changeStatus = useCallback((taskID: string, isDone: boolean, todolistId: string) => {
         const action = ChangeTaskStatusAC(taskID, todolistId, isDone);
         dispatch(action);
-    }
+    }, []);
 
     //Редактирование Названия Тасок
-    function changeTaskTitle(taskID: string, title: string, todolistId: string) {
+    const changeTaskTitle = useCallback((taskID: string, title: string, todolistId: string) => {
         const action = ChangeTitleTaskAC(taskID, title, todolistId);
         dispatch(action);
-    }
+    }, []);
 
     //Удаление ТудуЛитсов
-    let removeTodoList = (todolistId: string) => {
+    const removeTodoList = useCallback((todolistId: string) => {
         const action = RemoveTodolistAC(todolistId);
         dispatch(action)
-    };
+    }, []);
 
     return (
         <div className="App">
@@ -119,37 +120,36 @@ function AppWithRedux() {
 
                     {
                         todoLists.map((tl) => {
+                            let taskForTodolist = tasksObj[tl.id];
 
-                            //Фильтрация тасок
-                            let taskForTodo = tasksObj[tl.id];
+                            // if (tl.filter === "active") {
+                            //     // taskForTodo = taskForTodo.filter(t => t.isDone === false)
+                            //     taskForTodo = taskForTodo.filter(t => !t.isDone)
+                            // }
+                            // if (tl.filter === "completed") {
+                            //     // taskForTodo = taskForTodo.filter(t => t.isDone === true)
+                            //     taskForTodo = taskForTodo.filter(t => t.isDone)
+                            // }
 
-                            if (tl.filter === "active") {
-                                // taskForTodo = taskForTodo.filter(t => t.isDone === false)
-                                taskForTodo = taskForTodo.filter(t => !t.isDone )
-                            }
-                            if (tl.filter === "completed") {
-                                // taskForTodo = taskForTodo.filter(t => t.isDone === true)
-                                taskForTodo = taskForTodo.filter(t => t.isDone )
-                            }
-
-                            return (<Grid item>
-                                <Paper style={{padding: "20px"}}>
-                                    <Todo
-                                        key={tl.id}
-                                        id={tl.id}
-                                        title={tl.title}
-                                        tasks={taskForTodo}
-                                        removeTask={removeTask}
-                                        changeFilter={changeFilter}
-                                        addTask={addTask}
-                                        changeStatus={changeStatus}
-                                        filter={tl.filter}
-                                        removeTodoList={removeTodoList}
-                                        changeTaskTitle={changeTaskTitle}
-                                        changeToDoTitle={changeToDoTitle}
-                                    />
-                                </Paper>
-                            </Grid>)
+                            return (
+                                <Grid item>
+                                    <Paper style={{padding: "20px"}}>
+                                        <Todo
+                                            key={tl.id}
+                                            id={tl.id}
+                                            title={tl.title}
+                                            tasks={taskForTodolist}
+                                            removeTask={removeTask}
+                                            changeFilter={changeFilter}
+                                            addTask={addTask}
+                                            changeStatus={changeStatus}
+                                            filter={tl.filter}
+                                            removeTodoList={removeTodoList}
+                                            changeTaskTitle={changeTaskTitle}
+                                            changeToDoTitle={changeToDoTitle}
+                                        />
+                                    </Paper>
+                                </Grid>)
                         })
                     }
 

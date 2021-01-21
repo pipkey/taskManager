@@ -7,8 +7,9 @@ type EditableSpanType = {
     changeValue: (newValue: string) => void
 }
 
-function EditableSpan(props: EditableSpanType) {
-    const [editMode, setEditMode] = useState<boolean>(false)
+const EditableSpan = React.memo((props: EditableSpanType) => {
+    console.log("editable clicked");
+    const [editMode, setEditMode] = useState<boolean>(false);
     let [title, setTitle] = useState<string>(props.title);
 
     const activatedEditMode = () => {
@@ -25,24 +26,23 @@ function EditableSpan(props: EditableSpanType) {
     };
     return (
 
-    editMode
-        ?
-        <TextField
-            value={title}
-            onBlur={deActivatedEditMode}
-            autoFocus={true}
-            onChange={ChangeTitle}
-        />
+        editMode
+            ?
+            <TextField
+                value={title}
+                onBlur={deActivatedEditMode}
+                autoFocus={true}
+                onChange={ChangeTitle}
+            />
 
-        :
+            :
 
-        < span onClick={activatedEditMode}>
+            < span onClick={activatedEditMode}>
                     {props.title}</span>
 
 
-
-)
-}
+    )
+});
 
 
 export default EditableSpan;
